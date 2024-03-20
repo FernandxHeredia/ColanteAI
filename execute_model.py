@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import os
 import csv
+import matplotlib.pyplot as plt
 
 model = load_model('modelo.keras')
 scaler = MinMaxScaler()
@@ -27,7 +28,7 @@ def load_labels(path):
             niveles_colante.append(float(row['COLANTE']))
         return niveles_colante
 
-image_folder = "./Imagenes"
+image_folder = "./ImagenesTest"
 
 test_images = load_images_from_folder(image_folder)
 
@@ -36,11 +37,14 @@ test_niveles_colante = load_labels("./Datos Test.csv")
 X_test = np.array(test_images)
 
 y_test = np.array(test_niveles_colante)
+y_test = scaler.fit_transform(y_test.reshape(-1, 1))
 
 # Predict the amount of adhesive for the new images
-predictions = model.predict(test_images)
-
-# Inverse transform the predictions to get the actual amount of adhesive
+predictions = model.predict(X_test)
 predictions = scaler.inverse_transform(predictions)
 
-print(predictions)
+y_test_transformed = scaler.inverse_transform(y_test)
+plt.scatter(y_test_transformed, predictions)
+plt.plot(np.linspace(min(y_test_transformed), max(y_test_transformed)), 
+         np.linspace(min(y_test_transformed), max(y_test_transformed)), color='red')  # x=y line
+plt.show()
