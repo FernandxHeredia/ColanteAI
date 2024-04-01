@@ -9,6 +9,10 @@ import csv
 from keras.regularizers import l2
 from keras.layers import Dropout
 from keras.layers import Dense, Flatten
+from keras.models import Sequential
+from sklearn.preprocessing import MinMaxScaler
+from joblib import dump
+
 
 
 def load_images_from_folder(image_folder):
@@ -45,7 +49,7 @@ X_test = np.array(test_images)
 y_train = np.array(train_niveles_colante)
 y_test = np.array(test_niveles_colante)
 
-from sklearn.preprocessing import MinMaxScaler
+
 
 # Create a scaler object
 scaler = MinMaxScaler()
@@ -53,9 +57,11 @@ scaler = MinMaxScaler()
 # Fit the scaler to the training labels and transform
 y_train = scaler.fit_transform(y_train.reshape(-1, 1))
 
+# Save the fitted scaler for later use
+dump(scaler, 'scaler.joblib') 
+
 # Transform the test labels
 y_test = scaler.transform(y_test.reshape(-1, 1))
-from keras.models import Sequential
 model = Sequential()
 
 # Add convolutional layers
